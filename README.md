@@ -9,6 +9,12 @@ UI language are both selectable.
 > Deepgram ile yazıya çevrilip odaktaki pencereye yapıştırılır. Sistem tepsisinde
 > çalışır. Hem konuşulan dil hem arayüz dili seçilebilir.
 
+## Download
+Grab the ready-to-run **`VoiceDictate.exe`** from the
+[**latest release**](https://github.com/sanwhere/voice-dictation/releases/latest)
+— no Python needed. Run it, then right-click the tray icon → Settings to enter your
+own Deepgram API key.
+
 ## Features
 - 🎙️ Push-to-talk dictation (default key **F8**, configurable, with a "capture key" button)
 - 📋 Pastes into the focused window via clipboard (handles non-ASCII/Turkish chars cleanly)
