@@ -20,7 +20,29 @@ own Deepgram API key.
 - 🌍 Spoken language selectable, including **auto-detect** (e.g. mixed Turkish/English)
 - 🇹🇷/🇬🇧 UI language: Turkish or English
 - 🖥️ System tray app — right-click to change settings, no console window
+- 🔴 On-screen recording indicator while you speak — draggable, with a live seconds counter
+- 🚀 Optional "Start with Windows" autostart
 - 🔑 No Anthropic/LLM cost — only uses Deepgram for speech-to-text ($200 free credit for new Deepgram accounts; real usage is a tiny fraction of a cent)
+
+## Languages
+
+**Interface (UI) languages:** Turkish (`tr`) and English (`en`) — switchable in Settings.
+
+**Spoken / recognized languages:** powered by Deepgram. Set a specific language or
+pick **`auto`** to let Deepgram detect it automatically (great when you mix, e.g.,
+Turkish and English). Languages selectable in the app include:
+
+`auto` · English (`en`, `en-US`, `en-GB`) · Turkish (`tr`) · Spanish (`es`, `es-419`) ·
+French (`fr`, `fr-CA`) · German (`de`) · Italian (`it`) · Portuguese (`pt`, `pt-BR`) ·
+Dutch (`nl`) · Russian (`ru`) · Ukrainian (`uk`) · Polish (`pl`) · Swedish (`sv`) ·
+Danish (`da`) · Norwegian (`no`) · Finnish (`fi`) · Czech (`cs`) · Slovak (`sk`) ·
+Greek (`el`) · Hungarian (`hu`) · Romanian (`ro`) · Indonesian (`id`) · Malay (`ms`) ·
+Hindi (`hi`) · Japanese (`ja`) · Korean (`ko`) · Chinese (`zh`) · Arabic (`ar`)
+
+Deepgram supports more languages than the preset list above — see the
+[Deepgram languages overview](https://developers.deepgram.com/docs/models-languages-overview)
+for the full set. With `auto`, detection works across the supported languages without
+changing the setting.
 
 ## Quick start (from source)
 ```powershell
@@ -58,6 +80,8 @@ Output: `dist\VoiceDictate.exe` (no Python needed to run it).
 | Spoken language | `tr`, `en`, … or `auto` (Deepgram language detection) |
 | Interface language | `tr` / `en` |
 | Auto-paste / Auto-Enter | Paste automatically, optionally submit with Enter |
+| Recording indicator | Show a draggable on-screen "● REC" timer while recording |
+| Start with Windows | Launch automatically at login (per-user, no admin) |
 
 ## Files
 | File | Purpose |

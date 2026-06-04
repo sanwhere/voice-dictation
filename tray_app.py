@@ -24,6 +24,7 @@ import config
 import stt
 import settings_store
 import autostart
+from overlay import RecordingOverlay
 from i18n import t
 
 pyautogui.FAILSAFE = False
@@ -36,6 +37,7 @@ _running = True
 _listening = False
 _settings_open = False
 _icon = None
+_overlay = None
 
 
 # ---------- Tepsi ikonu cizimi ----------
@@ -95,11 +97,15 @@ def _listen_loop():
         try:
             if config.DEEPGRAM_API_KEY and keyboard.is_pressed(config.PTT_HOTKEY):
                 _set_active(True)
+                if config.SHOW_OVERLAY and _overlay is not None:
+                    _overlay.show()
                 try:
                     text = stt.listen()
-                    _handle_text(text)
                 finally:
+                    if _overlay is not None:
+                        _overlay.hide()
                     _set_active(False)
+                _handle_text(text)
                 while keyboard.is_pressed(config.PTT_HOTKEY):
                     time.sleep(0.05)
         except Exception:
@@ -168,7 +174,7 @@ def _settings_window():
     ttk.Label(frm, text=t("lbl_spoken")).grid(row=3, column=0, sticky="w", pady=4)
     lang_var = tk.StringVar(value=s["language"])
     ttk.Combobox(frm, textvariable=lang_var, width=14,
-                 values=["auto", "tr", "en", "en-US", "de", "fr", "es", "ar", "ru", "it"]).grid(row=3, column=1, sticky="w", pady=4)
+                 values=config.SPOKEN_LANGUAGES).grid(row=3, column=1, sticky="w", pady=4)
     ttk.Label(frm, text=t("opt_auto"), foreground="#888").grid(row=3, column=2, sticky="w")
 
     # Arayuz dili
@@ -180,12 +186,14 @@ def _settings_window():
     paste_var = tk.BooleanVar(value=s["auto_paste"])
     enter_var = tk.BooleanVar(value=s["auto_enter"])
     start_var = tk.BooleanVar(value=autostart.is_enabled())  # gercek durum: kayit defteri
+    overlay_var = tk.BooleanVar(value=s.get("show_overlay", True))
     ttk.Checkbutton(frm, text=t("chk_paste"), variable=paste_var).grid(row=5, column=0, columnspan=2, sticky="w", pady=2)
     ttk.Checkbutton(frm, text=t("chk_enter"), variable=enter_var).grid(row=6, column=0, columnspan=2, sticky="w", pady=2)
     ttk.Checkbutton(frm, text=t("chk_autostart"), variable=start_var).grid(row=7, column=0, columnspan=2, sticky="w", pady=2)
+    ttk.Checkbutton(frm, text=t("chk_overlay"), variable=overlay_var).grid(row=8, column=0, columnspan=2, sticky="w", pady=2)
 
     info = ttk.Label(frm, text="", foreground="#2a7")
-    info.grid(row=9, column=0, columnspan=3, sticky="w", pady=(6, 0))
+    info.grid(row=10, column=0, columnspan=3, sticky="w", pady=(6, 0))
 
     def do_save(close=True):
         new = {
@@ -196,6 +204,7 @@ def _settings_window():
             "auto_paste": bool(paste_var.get()),
             "auto_enter": bool(enter_var.get()),
             "auto_start": bool(start_var.get()),
+            "show_overlay": bool(overlay_var.get()),
         }
         settings_store.save(new)
         settings_store.apply_to_config(new)
@@ -212,7 +221,7 @@ def _settings_window():
             root.after(1500, lambda: info.config(text=""))
 
     btns = ttk.Frame(frm)
-    btns.grid(row=8, column=0, columnspan=3, sticky="e", pady=(12, 0))
+    btns.grid(row=9, column=0, columnspan=3, sticky="e", pady=(12, 0))
     ttk.Button(btns, text=t("btn_apply"), command=lambda: do_save(False)).grid(row=0, column=0, padx=4)
     ttk.Button(btns, text=t("btn_saveclose"), command=lambda: do_save(True)).grid(row=0, column=1, padx=4)
 
@@ -264,8 +273,13 @@ def _menu():
 
 
 def main():
-    global _icon
+    global _icon, _overlay
     settings_store.apply_to_config(settings_store.load())
+
+    try:
+        _overlay = RecordingOverlay()
+    except Exception:
+        _overlay = None
 
     threading.Thread(target=_listen_loop, daemon=True).start()
 

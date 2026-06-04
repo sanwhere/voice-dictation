@@ -27,6 +27,14 @@ DEEPGRAM_URL = "https://api.deepgram.com/v1/listen"
 DEEPGRAM_MODEL = "nova-2"
 DEEPGRAM_LANGUAGE = os.getenv("DEEPGRAM_LANGUAGE", "tr")  # "tr","en",... ya da "auto" (dil tespiti)
 UI_LANGUAGE = os.getenv("UI_LANGUAGE", "tr")              # arayuz dili: "tr" / "en"
+SHOW_OVERLAY = os.getenv("SHOW_OVERLAY", "1") == "1"      # kayit sirasinda ekran gostergesi
+
+# Konusulan dil secenekleri (Deepgram nova-2). "auto" = otomatik tespit.
+SPOKEN_LANGUAGES = [
+    "auto", "tr", "en", "en-US", "en-GB", "es", "es-419", "fr", "fr-CA",
+    "de", "it", "pt", "pt-BR", "nl", "ru", "uk", "pl", "sv", "da", "no",
+    "fi", "cs", "sk", "el", "hu", "ro", "id", "ms", "hi", "ja", "ko", "zh", "ar",
+]
 SAMPLE_RATE = 16000
 CHANNELS = 1
 

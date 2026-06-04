@@ -19,6 +19,7 @@ DEFAULTS = {
     "auto_paste": True,
     "auto_enter": False,
     "auto_start": False,        # Windows acilisinda otomatik baslat
+    "show_overlay": True,       # kayit sirasinda ekran gostergesi
 }
 
 
@@ -49,3 +50,4 @@ def apply_to_config(data: dict):
     config.UI_LANGUAGE = (data.get("ui_language") or "tr").strip()
     config.DICTATE_AUTO_PASTE = bool(data.get("auto_paste", True))
     config.DICTATE_AUTO_ENTER = bool(data.get("auto_enter", False))
+    config.SHOW_OVERLAY = bool(data.get("show_overlay", True))
