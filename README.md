@@ -1,13 +1,9 @@
-# Voice Dictation (Sesli Dikte)
+# Voice Dictation
 
 Push-to-talk voice dictation for Windows. Hold a key, speak, and your speech is
 transcribed (Deepgram) and pasted into whatever window is focused — terminal,
 editor, chat, anything. Runs quietly in the **system tray**. Spoken language and
 UI language are both selectable.
-
-> Türkçe: Bas-konuş ile sesli dikte. Tuşu basılı tut, konuş; konuştuğun metin
-> Deepgram ile yazıya çevrilip odaktaki pencereye yapıştırılır. Sistem tepsisinde
-> çalışır. Hem konuşulan dil hem arayüz dili seçilebilir.
 
 ## Download
 Grab the ready-to-run **`VoiceDictate.exe`** from the
@@ -15,13 +11,16 @@ Grab the ready-to-run **`VoiceDictate.exe`** from the
 — no Python needed. Run it, then right-click the tray icon → Settings to enter your
 own Deepgram API key.
 
+> 💸 **Cost:** Deepgram gives **$200 of free credit** to new accounts, and dictation
+> usage is tiny — talking all day costs roughly a cent. There is **no LLM/API cost** at all.
+
 ## Features
 - 🎙️ Push-to-talk dictation (default key **F8**, configurable, with a "capture key" button)
 - 📋 Pastes into the focused window via clipboard (handles non-ASCII/Turkish chars cleanly)
 - 🌍 Spoken language selectable, including **auto-detect** (e.g. mixed Turkish/English)
 - 🇹🇷/🇬🇧 UI language: Turkish or English
 - 🖥️ System tray app — right-click to change settings, no console window
-- 🔑 No Anthropic/LLM cost — only uses Deepgram for speech-to-text
+- 🔑 No Anthropic/LLM cost — only uses Deepgram for speech-to-text ($200 free credit for new Deepgram accounts; real usage is a tiny fraction of a cent)
 
 ## Quick start (from source)
 ```powershell
