@@ -18,6 +18,7 @@ DEFAULTS = {
     "ui_language": "tr",        # arayuz dili: "tr" / "en"
     "auto_paste": True,
     "auto_enter": False,
+    "auto_start": False,        # Windows acilisinda otomatik baslat
 }
 
 

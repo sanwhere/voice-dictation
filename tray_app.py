@@ -23,6 +23,7 @@ from PIL import Image, ImageDraw
 import config
 import stt
 import settings_store
+import autostart
 from i18n import t
 
 pyautogui.FAILSAFE = False
@@ -178,11 +179,13 @@ def _settings_window():
 
     paste_var = tk.BooleanVar(value=s["auto_paste"])
     enter_var = tk.BooleanVar(value=s["auto_enter"])
+    start_var = tk.BooleanVar(value=autostart.is_enabled())  # gercek durum: kayit defteri
     ttk.Checkbutton(frm, text=t("chk_paste"), variable=paste_var).grid(row=5, column=0, columnspan=2, sticky="w", pady=2)
     ttk.Checkbutton(frm, text=t("chk_enter"), variable=enter_var).grid(row=6, column=0, columnspan=2, sticky="w", pady=2)
+    ttk.Checkbutton(frm, text=t("chk_autostart"), variable=start_var).grid(row=7, column=0, columnspan=2, sticky="w", pady=2)
 
     info = ttk.Label(frm, text="", foreground="#2a7")
-    info.grid(row=8, column=0, columnspan=3, sticky="w", pady=(6, 0))
+    info.grid(row=9, column=0, columnspan=3, sticky="w", pady=(6, 0))
 
     def do_save(close=True):
         new = {
@@ -192,9 +195,14 @@ def _settings_window():
             "ui_language": (ui_var.get().strip() or "tr"),
             "auto_paste": bool(paste_var.get()),
             "auto_enter": bool(enter_var.get()),
+            "auto_start": bool(start_var.get()),
         }
         settings_store.save(new)
         settings_store.apply_to_config(new)
+        try:
+            autostart.set_enabled(bool(start_var.get()))
+        except Exception:
+            pass
         if _icon is not None:
             _icon.update_menu()
         if close:
@@ -204,7 +212,7 @@ def _settings_window():
             root.after(1500, lambda: info.config(text=""))
 
     btns = ttk.Frame(frm)
-    btns.grid(row=7, column=0, columnspan=3, sticky="e", pady=(12, 0))
+    btns.grid(row=8, column=0, columnspan=3, sticky="e", pady=(12, 0))
     ttk.Button(btns, text=t("btn_apply"), command=lambda: do_save(False)).grid(row=0, column=0, padx=4)
     ttk.Button(btns, text=t("btn_saveclose"), command=lambda: do_save(True)).grid(row=0, column=1, padx=4)
 
