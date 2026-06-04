@@ -146,17 +146,17 @@ def _settings_window():
     frm.grid()
 
     ttk.Label(frm, text=t("lbl_key")).grid(row=0, column=0, sticky="w", pady=4)
-    key_var = tk.StringVar(value=s["deepgram_api_key"])
+    key_var = tk.StringVar(master=root, value=s["deepgram_api_key"])
     key_entry = ttk.Entry(frm, textvariable=key_var, width=46, show="*")
     key_entry.grid(row=0, column=1, columnspan=2, sticky="we", pady=4)
-    show_var = tk.BooleanVar(value=False)
+    show_var = tk.BooleanVar(master=root, value=False)
 
     def toggle_show():
         key_entry.config(show="" if show_var.get() else "*")
     ttk.Checkbutton(frm, text=t("chk_show"), variable=show_var, command=toggle_show).grid(row=1, column=1, sticky="w")
 
     ttk.Label(frm, text=t("lbl_hotkey")).grid(row=2, column=0, sticky="w", pady=4)
-    hk_var = tk.StringVar(value=s["hotkey"])
+    hk_var = tk.StringVar(master=root, value=s["hotkey"])
     ttk.Entry(frm, textvariable=hk_var, width=20).grid(row=2, column=1, sticky="w", pady=4)
 
     capture_btn = ttk.Button(frm, text=t("btn_capture"))
@@ -180,21 +180,21 @@ def _settings_window():
 
     # Konusulan dil ("auto" = Deepgram dil tespiti, TR/EN vb. otomatik)
     ttk.Label(frm, text=t("lbl_spoken")).grid(row=3, column=0, sticky="w", pady=4)
-    lang_var = tk.StringVar(value=s["language"])
+    lang_var = tk.StringVar(master=root, value=s["language"])
     ttk.Combobox(frm, textvariable=lang_var, width=14,
                  values=config.SPOKEN_LANGUAGES).grid(row=3, column=1, sticky="w", pady=4)
     ttk.Label(frm, text=t("opt_auto"), foreground="#888").grid(row=3, column=2, sticky="w")
 
     # Arayuz dili
     ttk.Label(frm, text=t("lbl_ui")).grid(row=4, column=0, sticky="w", pady=4)
-    ui_var = tk.StringVar(value=s.get("ui_language", "tr"))
+    ui_var = tk.StringVar(master=root, value=s.get("ui_language", "tr"))
     ttk.Combobox(frm, textvariable=ui_var, width=14, state="readonly",
                  values=["tr", "en"]).grid(row=4, column=1, sticky="w", pady=4)
 
-    paste_var = tk.BooleanVar(value=s["auto_paste"])
-    enter_var = tk.BooleanVar(value=s["auto_enter"])
-    start_var = tk.BooleanVar(value=autostart.is_enabled())  # gercek durum: kayit defteri
-    overlay_var = tk.BooleanVar(value=s.get("show_overlay", True))
+    paste_var = tk.BooleanVar(master=root, value=s["auto_paste"])
+    enter_var = tk.BooleanVar(master=root, value=s["auto_enter"])
+    start_var = tk.BooleanVar(master=root, value=autostart.is_enabled())  # gercek durum: kayit defteri
+    overlay_var = tk.BooleanVar(master=root, value=s.get("show_overlay", True))
     ttk.Checkbutton(frm, text=t("chk_paste"), variable=paste_var).grid(row=5, column=0, columnspan=2, sticky="w", pady=2)
     ttk.Checkbutton(frm, text=t("chk_enter"), variable=enter_var).grid(row=6, column=0, columnspan=2, sticky="w", pady=2)
     ttk.Checkbutton(frm, text=t("chk_autostart"), variable=start_var).grid(row=7, column=0, columnspan=2, sticky="w", pady=2)
