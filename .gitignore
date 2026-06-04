@@ -1,0 +1,16 @@
+# Sirlar / yerel ortam
+.env
+
+# Python
+venv/
+__pycache__/
+*.pyc
+
+# PyInstaller ciktilari
+build/
+dist/
+*.spec
+
+# Ses gecici dosyalari
+*.mp3
+*.wav

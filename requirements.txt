@@ -1,0 +1,13 @@
+anthropic
+requests
+sounddevice
+numpy
+mss
+pillow
+pyautogui
+keyboard
+edge-tts
+pygame
+pyperclip
+python-dotenv
+pystray
