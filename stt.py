@@ -24,6 +24,7 @@ _stream = None
 _active = False                       # F8 basili -> kayit modu
 _recording = []                       # aktifken biriken parcalar
 _preroll = collections.deque(maxlen=int(config.SAMPLE_RATE * _PREROLL_SEC))
+_session = requests.Session()         # keep-alive: her cagride yeniden baglanma
 
 
 def _callback(indata, frames_count, time_info, status):
@@ -74,8 +75,8 @@ def transcribe_wav(wav_bytes: bytes) -> str:
         "Authorization": f"Token {config.DEEPGRAM_API_KEY}",
         "Content-Type": "audio/wav",
     }
-    resp = requests.post(config.DEEPGRAM_URL, params=params, headers=headers,
-                         data=wav_bytes, timeout=30)
+    resp = _session.post(config.DEEPGRAM_URL, params=params, headers=headers,
+                         data=wav_bytes, timeout=(5, 30))
     resp.raise_for_status()
     data = resp.json()
     try:
@@ -84,19 +85,20 @@ def transcribe_wav(wav_bytes: bytes) -> str:
         return ""
 
 
-def listen(hotkey: str = None) -> str:
-    """Hotkey basili tut -> konus -> birak -> Turkce metin dondur."""
+def record_while_held(hotkey: str = None) -> np.ndarray:
+    """Hotkey basili oldugu surece kaydeder, birakinca SES'i dondurur (ag yok).
+
+    Bu fonksiyon tus birakilir birakilmaz doner; transkript (ag) ayri yapilir,
+    boylece kayit gostergesi/sayac ag beklemesi boyunca calismaz."""
     global _active, _recording
     hotkey = hotkey or config.PTT_HOTKEY
     start_stream()
 
-    # Kayit modunu ac: preroll'u (basistan oncesi) baslangic olarak al
     with _lock:
         pre = np.array(_preroll, dtype="int16")
         _recording = [pre] if pre.size else []
         _active = True
 
-    # Tus birakilana kadar bekle, sonra kisa kuyruk
     while keyboard.is_pressed(hotkey):
         sd.sleep(15)
     sd.sleep(int(_TAIL_SEC * 1000))
@@ -107,9 +109,21 @@ def listen(hotkey: str = None) -> str:
         _recording = []
 
     if not parts:
-        return ""
-    audio = np.concatenate(parts)
-    # Cok kisa (gercek konusma yok) ise bos don
-    if audio.shape[0] < int(config.SAMPLE_RATE * 0.2):
+        return np.zeros((0,), dtype="int16")
+    return np.concatenate(parts)
+
+
+def is_too_short(audio: np.ndarray) -> bool:
+    return audio is None or audio.shape[0] < int(config.SAMPLE_RATE * 0.2)
+
+
+def transcribe(audio: np.ndarray) -> str:
+    """Kaydedilmis sesi Deepgram'e gonderip metin dondurur (ag adimi)."""
+    if is_too_short(audio):
         return ""
     return transcribe_wav(_to_wav_bytes(audio))
+
+
+def listen(hotkey: str = None) -> str:
+    """Kaydet + transkript (eski uyumlu API; dictate.py bunu kullanir)."""
+    return transcribe(record_while_held(hotkey))

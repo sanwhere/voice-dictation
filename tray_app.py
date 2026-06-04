@@ -74,12 +74,8 @@ def _beep_err():
 
 
 # ---------- Dikte islemi ----------
-def _handle_text(text):
-    if not text:
-        _beep_err()
-        return
+def _paste(text):
     pyperclip.copy(text)
-    _beep_ok()
     if config.DICTATE_AUTO_PASTE:
         time.sleep(0.05)
         pyautogui.hotkey("ctrl", "v")
@@ -99,13 +95,25 @@ def _listen_loop():
                 _set_active(True)
                 if config.SHOW_OVERLAY and _overlay is not None:
                     _overlay.show()
+                # 1) Kayit: tus birakilinca HEMEN doner (ag yok)
                 try:
-                    text = stt.listen()
+                    audio = stt.record_while_held()
                 finally:
                     if _overlay is not None:
-                        _overlay.hide()
+                        _overlay.hide()        # gosterge/sayac bırakildigi an durur
                     _set_active(False)
-                _handle_text(text)
+
+                # 2) Anlik geri bildirim
+                if stt.is_too_short(audio):
+                    _beep_err()
+                else:
+                    _beep_ok()                 # bip TAM tus birakildiginda gelir
+                    # 3) Transkript (ag) + yapistir
+                    text = stt.transcribe(audio)
+                    if text:
+                        _paste(text)
+                    else:
+                        _beep_err()
                 while keyboard.is_pressed(config.PTT_HOTKEY):
                     time.sleep(0.05)
         except Exception:
