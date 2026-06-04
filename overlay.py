@@ -7,6 +7,8 @@ import threading
 import time
 import tkinter as tk
 
+from i18n import t
+
 _GWL_EXSTYLE = -20
 _WS_EX_NOACTIVATE = 0x08000000
 _WS_EX_TOOLWINDOW = 0x00000080
@@ -15,8 +17,9 @@ _GA_ROOT = 2
 
 class RecordingOverlay:
     def __init__(self):
-        self._active = False
+        self._state = "idle"   # idle | rec | proc
         self._start = 0.0
+        self._proc_start = 0.0
         self._root = None
         self._pos = None  # (x, y) oturum boyunca hatirlanan konum
         self._ready = threading.Event()
@@ -70,21 +73,31 @@ class RecordingOverlay:
         self._root.geometry(f"+{x}+{y}")
         self._pos = (x, y)
 
-    # ---- her 100ms: sayac + yanip sonen nokta ----
+    # ---- her 100ms: duruma gore goster ----
     def _tick(self):
-        if self._active:
+        if self._state == "rec":
             elapsed = time.monotonic() - self._start
             self._label.config(text=f"REC  {elapsed:0.1f}s")
             on = int(elapsed * 2) % 2 == 0
-            self._dot.config(fg="#e64545" if on else "#5a1f1f")
+            self._dot.config(fg="#e64545" if on else "#5a1f1f")  # kirmizi, yanip soner
+        elif self._state == "proc":
+            n = 1 + int((time.monotonic() - self._proc_start) * 3) % 3
+            self._label.config(text=t("ov_processing") + "." * n)
+            on = int((time.monotonic() - self._proc_start) * 3) % 2 == 0
+            self._dot.config(fg="#e0a020" if on else "#5a4410")  # amber, dones
         self._root.after(100, self._tick)
 
     # ---- dis API (thread-guvenli) ----
     def show(self):
         self._start = time.monotonic()
-        self._active = True
+        self._state = "rec"
         if self._root:
             self._root.after(0, self._show_window)
+
+    def processing(self):
+        """Tus birakildi -> transkript bekleniyor (pencere acik kalir)."""
+        self._proc_start = time.monotonic()
+        self._state = "proc"
 
     def _show_window(self):
         self._root.deiconify()
@@ -101,6 +114,6 @@ class RecordingOverlay:
         self._root.attributes("-topmost", True)
 
     def hide(self):
-        self._active = False
+        self._state = "idle"
         if self._root:
             self._root.after(0, self._root.withdraw)

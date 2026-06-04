@@ -96,22 +96,25 @@ def _listen_loop():
                 if config.SHOW_OVERLAY and _overlay is not None:
                     _overlay.show()
                 # 1) Kayit: tus birakilinca HEMEN doner (ag yok)
-                try:
-                    audio = stt.record_while_held()
-                finally:
-                    if _overlay is not None:
-                        _overlay.hide()        # gosterge/sayac bırakildigi an durur
-                    _set_active(False)
+                audio = stt.record_while_held()
 
-                # 2) Anlik geri bildirim
                 if stt.is_too_short(audio):
+                    if _overlay is not None:
+                        _overlay.hide()
+                    _set_active(False)
                     _beep_err()
                 else:
-                    _beep_ok()                 # bip TAM tus birakildiginda gelir
-                    # 3) Transkript (ag) + yapistir
+                    # 2) "Yaziliyor..." goster (gosterge acik kalir), transkripti bekle
+                    if _overlay is not None:
+                        _overlay.processing()
                     text = stt.transcribe(audio)
+                    if _overlay is not None:
+                        _overlay.hide()        # is bitti -> gosterge kapanir
+                    _set_active(False)
+                    # 3) Yapistir + tamamlanma bip'i ("gitti-dondu")
                     if text:
                         _paste(text)
+                        _beep_ok()
                     else:
                         _beep_err()
                 while keyboard.is_pressed(config.PTT_HOTKEY):
