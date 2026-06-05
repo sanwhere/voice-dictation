@@ -28,6 +28,9 @@ DEEPGRAM_MODEL = "nova-2"
 DEEPGRAM_LANGUAGE = os.getenv("DEEPGRAM_LANGUAGE", "tr")  # "tr","en",... ya da "auto" (dil tespiti)
 UI_LANGUAGE = os.getenv("UI_LANGUAGE", "tr")              # arayuz dili: "tr" / "en"
 SHOW_OVERLAY = os.getenv("SHOW_OVERLAY", "1") == "1"      # kayit sirasinda ekran gostergesi
+OVERLAY_CORNER = os.getenv("OVERLAY_CORNER", "br")       # gosterge kosesi: tr/tl/br/bl (aktif monitorde)
+OVERLAY_INSET_X = int(os.getenv("OVERLAY_INSET_X", "40"))
+OVERLAY_INSET_Y = int(os.getenv("OVERLAY_INSET_Y", "90"))
 
 # Konusulan dil secenekleri (Deepgram nova-2). "auto" = otomatik tespit.
 SPOKEN_LANGUAGES = [

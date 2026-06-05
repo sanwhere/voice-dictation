@@ -203,8 +203,18 @@ def _settings_window():
     ttk.Checkbutton(frm, text=t("chk_autostart"), variable=start_var).grid(row=7, column=0, columnspan=2, sticky="w", pady=2)
     ttk.Checkbutton(frm, text=t("chk_overlay"), variable=overlay_var).grid(row=8, column=0, columnspan=2, sticky="w", pady=2)
 
+    # Gosterge konumu (aktif monitorde hangi kose)
+    _corner_codes = ["tr", "tl", "br", "bl"]
+    _corner_labels = {c: t("pos_" + c) for c in _corner_codes}
+    _label_to_code = {v: k for k, v in _corner_labels.items()}
+    cur_corner = s.get("overlay_corner", "br")
+    ttk.Label(frm, text=t("lbl_overlay_pos")).grid(row=9, column=0, sticky="w", pady=4)
+    pos_var = tk.StringVar(master=root, value=_corner_labels.get(cur_corner, _corner_labels["br"]))
+    ttk.Combobox(frm, textvariable=pos_var, width=14, state="readonly",
+                 values=[_corner_labels[c] for c in _corner_codes]).grid(row=9, column=1, sticky="w", pady=4)
+
     info = ttk.Label(frm, text="", foreground="#2a7")
-    info.grid(row=10, column=0, columnspan=3, sticky="w", pady=(6, 0))
+    info.grid(row=11, column=0, columnspan=3, sticky="w", pady=(6, 0))
 
     def do_save(close=True):
         new = {
@@ -217,6 +227,14 @@ def _settings_window():
             "auto_start": bool(start_var.get()),
             "show_overlay": bool(overlay_var.get()),
         }
+        # Gosterge kosesi; kose degistiyse boslugu varsayilana sifirla
+        new_corner = _label_to_code.get(pos_var.get(), "br")
+        new["overlay_corner"] = new_corner
+        if new_corner != getattr(config, "OVERLAY_CORNER", "br"):
+            new["overlay_inset_x"], new["overlay_inset_y"] = 40, 90
+        else:
+            new["overlay_inset_x"] = getattr(config, "OVERLAY_INSET_X", 40)
+            new["overlay_inset_y"] = getattr(config, "OVERLAY_INSET_Y", 90)
         settings_store.save(new)
         settings_store.apply_to_config(new)
         try:
@@ -232,7 +250,7 @@ def _settings_window():
             root.after(1500, lambda: info.config(text=""))
 
     btns = ttk.Frame(frm)
-    btns.grid(row=9, column=0, columnspan=3, sticky="e", pady=(12, 0))
+    btns.grid(row=10, column=0, columnspan=3, sticky="e", pady=(12, 0))
     ttk.Button(btns, text=t("btn_apply"), command=lambda: do_save(False)).grid(row=0, column=0, padx=4)
     ttk.Button(btns, text=t("btn_saveclose"), command=lambda: do_save(True)).grid(row=0, column=1, padx=4)
 
@@ -275,7 +293,7 @@ def _quit(icon, item):
 def _menu():
     return pystray.Menu(
         pystray.MenuItem(lambda i: t("menu_hotkey", key=config.PTT_HOTKEY.upper()), None, enabled=False),
-        pystray.MenuItem(lambda i: t("menu_settings"), lambda i, it: _open_settings()),
+        pystray.MenuItem(lambda i: t("menu_settings"), lambda i, it: _open_settings(), default=True),
         pystray.MenuItem(lambda i: t("menu_autopaste"), _toggle_paste, checked=lambda i: config.DICTATE_AUTO_PASTE),
         pystray.MenuItem(lambda i: t("menu_autoenter"), _toggle_enter, checked=lambda i: config.DICTATE_AUTO_ENTER),
         pystray.Menu.SEPARATOR,

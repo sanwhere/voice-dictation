@@ -20,6 +20,9 @@ DEFAULTS = {
     "auto_enter": False,
     "auto_start": False,        # Windows acilisinda otomatik baslat
     "show_overlay": True,       # kayit sirasinda ekran gostergesi
+    "overlay_corner": "br",     # gosterge kosesi: tr/tl/br/bl (aktif monitorde)
+    "overlay_inset_x": 40,
+    "overlay_inset_y": 90,
 }
 
 
@@ -51,3 +54,6 @@ def apply_to_config(data: dict):
     config.DICTATE_AUTO_PASTE = bool(data.get("auto_paste", True))
     config.DICTATE_AUTO_ENTER = bool(data.get("auto_enter", False))
     config.SHOW_OVERLAY = bool(data.get("show_overlay", True))
+    config.OVERLAY_CORNER = data.get("overlay_corner", "br")
+    config.OVERLAY_INSET_X = int(data.get("overlay_inset_x", 40))
+    config.OVERLAY_INSET_Y = int(data.get("overlay_inset_y", 90))
